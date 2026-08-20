@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Área do Cliente — Alive</title>
+<link rel="icon" type="image/png" href="assets/alive-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="login-page">
+  <canvas id="particles" style="position:absolute;inset:0"></canvas>
+  <div class="hero-glow glow-1"></div>
+  <div class="hero-glow glow-2"></div>
+  <div class="login-card">
+    <img src="assets/alive-logo.png" alt="Alive" class="logo">
+    <h1>Área do Cliente</h1>
+    <p class="sub">Acesse o painel de gestão</p>
+    <form id="loginForm">
+      <input type="text" id="user" placeholder="Usuário" autocomplete="username" required>
+      <input type="password" id="pass" placeholder="Senha" autocomplete="current-password" required>
+      <button type="submit" class="btn btn-primary">Entrar</button>
+      <p class="login-err" id="loginErr" hidden>Usuário ou senha incorretos.</p>
+    </form>
+    <a href="index.html" class="login-back">← Voltar ao site</a>
+  </div>
+</div>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

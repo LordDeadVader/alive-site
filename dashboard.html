@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Gestão — Alive</title>
+<link rel="icon" type="image/png" href="assets/alive-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dash">
+
+<header class="dash-top">
+  <img src="assets/alive-logo.png" alt="Alive">
+  <div class="dash-user">
+    <span id="hello"></span>
+    <button class="btn btn-ghost btn-sm" id="btnLogout">Sair</button>
+  </div>
+</header>
+
+<main class="dash-main">
+  <h1>Gestão de Clientes</h1>
+  <p class="dash-sub">Acompanhe seus projetos, clientes e pagamentos.</p>
+
+  <div class="kpis">
+    <div class="kpi k-blue"><strong id="kTotal">0</strong><span>Clientes ativos</span></div>
+    <div class="kpi k-green"><strong id="kPago">R$ 0</strong><span>Recebido (pago)</span></div>
+    <div class="kpi k-amber"><strong id="kPendente">R$ 0</strong><span>A receber (pendente)</span></div>
+    <div class="kpi k-red"><strong id="kAtrasado">R$ 0</strong><span>Em atraso</span></div>
+  </div>
+
+  <div class="dash-bar">
+    <input type="search" id="busca" placeholder="🔍 Buscar cliente ou projeto...">
+    <select id="fPagamento">
+      <option value="">Pagamento: todos</option>
+      <option value="Pago">Pago</option>
+      <option value="Pendente">Pendente</option>
+      <option value="Atrasado">Atrasado</option>
+    </select>
+    <select id="fStatus">
+      <option value="">Projeto: todos</option>
+      <option value="Em andamento">Em andamento</option>
+      <option value="Concluído">Concluído</option>
+      <option value="Pausado">Pausado</option>
+    </select>
+    <button class="btn btn-primary btn-sm" id="btnNovo">+ Novo cliente</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Cliente</th><th>Projeto</th><th>Valor</th><th>Pagamento</th><th>Status</th><th>Prazo</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>Nenhum cliente encontrado. Clique em <strong>+ Novo cliente</strong> para começar.</div>
+  </div>
+</main>
+
+<!-- Modal cadastro/edição -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-card">
+    <h2 id="modalTitle">Novo cliente</h2>
+    <form id="clientForm">
+      <input type="hidden" id="cId">
+      <label>Nome do cliente <input type="text" id="cNome" required></label>
+      <label>Contato (WhatsApp / e-mail) <input type="text" id="cContato"></label>
+      <label>Projeto / serviço <input type="text" id="cProjeto" required placeholder="Ex.: Site institucional, Logo..."></label>
+      <label>Valor (R$) <input type="number" id="cValor" min="0" step="0.01" required></label>
+      <label>Situação do pagamento
+        <select id="cPagamento">
+          <option>Pendente</option><option>Pago</option><option>Atrasado</option>
+        </select>
+      </label>
+      <label>Status do projeto
+        <select id="cStatus">
+          <option>Em andamento</option><option>Concluído</option><option>Pausado</option>
+        </select>
+      </label>
+      <label>Prazo de entrega <input type="date" id="cPrazo"></label>
+      <label>Observações <textarea id="cObs" rows="2"></textarea></label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnCancelar">Cancelar</button>
+        <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>
