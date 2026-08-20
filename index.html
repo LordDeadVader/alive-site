@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
 
@@ -19,9 +19,9 @@
     <a href="#home" class="nav-logo"><img src="assets/alive-logo.png" alt="Alive"></a>
     <nav class="nav-links" id="navLinks">
       <a href="#home">Início</a>
+      <a href="#portfolio">Portfólio</a>
       <a href="#servicos">Serviços</a>
       <a href="#vantagens">Vantagens</a>
-      <a href="#portfolio">Portfólio</a>
       <a href="#planos">Planos</a>
       <a href="#contato">Contato</a>
       <a href="login.html" class="btn-login">Área do Cliente</a>
@@ -32,52 +32,119 @@
   </div>
 </header>
 
-<!-- ══════════ HERO / PARALLAX ══════════ -->
+<!-- ══════════ HERO — logo grande centralizada ══════════ -->
 <section class="hero" id="home">
   <canvas id="particles"></canvas>
   <div class="hero-glow glow-1 plx" data-speed="0.15"></div>
   <div class="hero-glow glow-2 plx" data-speed="0.25"></div>
   <div class="hero-grid plx" data-speed="0.08"></div>
   <div class="hero-content">
-    <div class="hero-badge reveal">✦ Agência de Criação Digital</div>
-    <h1 class="reveal">Sua marca <span class="grad">viva</span> no mundo digital</h1>
-    <p class="reveal">Criação de sites institucionais, design gráfico e identidade visual sob medida. Tecnologia, estética e estratégia para fortalecer a presença da sua empresa.</p>
+    <img src="assets/alive-logo.png" alt="Alive" class="hero-logo reveal">
+    <p class="hero-tag reveal">criação de sites &nbsp;·&nbsp; design &nbsp;·&nbsp; identidade visual</p>
+    <p class="hero-sub reveal">Damos vida à presença digital da sua marca.</p>
     <div class="hero-cta reveal">
-      <a href="#contato" class="btn btn-primary">Fale com um especialista</a>
-      <a href="#portfolio" class="btn btn-ghost">Ver portfólio</a>
-    </div>
-    <div class="hero-stats reveal">
-      <div><strong data-count="120">0</strong><span>Projetos entregues</span></div>
-      <div><strong data-count="98">0</strong><span>% de satisfação</span></div>
-      <div><strong data-count="7">0</strong><span>Anos de experiência</span></div>
+      <a href="#portfolio" class="btn btn-primary">Ver portfólio</a>
+      <a href="#contato" class="btn btn-ghost">Pedir orçamento</a>
     </div>
   </div>
   <div class="scroll-hint"><span></span></div>
 </section>
 
+<!-- ══════════ PORTFÓLIO (primeira seção) ══════════ -->
+<section class="section" id="portfolio">
+  <div class="container">
+    <p class="section-tag reveal">Portfólio</p>
+    <h2 class="reveal">Trabalhos que falam por nós</h2>
+    <div class="portfolio">
+
+      <figure class="work reveal" style="--h:212">
+        <div class="mock">
+          <div class="mock-bar"><i></i><i></i><i></i></div>
+          <div class="mock-body">
+            <div class="mk-nav"></div>
+            <div class="mk-hero"></div>
+            <div class="mk-row"><b></b><b></b><b></b></div>
+          </div>
+        </div>
+        <figcaption><strong>Site Institucional</strong><span>Clínica Odontológica</span></figcaption>
+      </figure>
+
+      <figure class="work reveal" style="--h:28">
+        <div class="mock">
+          <div class="mock-bar"><i></i><i></i><i></i></div>
+          <div class="mock-body">
+            <div class="mk-split"><div class="mk-img"></div><div class="mk-txt"><b></b><b></b><b class="s"></b></div></div>
+            <div class="mk-row"><b></b><b></b></div>
+          </div>
+        </div>
+        <figcaption><strong>Landing Page</strong><span>Curso Online</span></figcaption>
+      </figure>
+
+      <figure class="work reveal" style="--h:165">
+        <div class="mock mock-brand">
+          <div class="mk-logo">S</div>
+          <div class="mk-pal"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <figcaption><strong>Logo & Identidade Visual</strong><span>Studio Fitness</span></figcaption>
+      </figure>
+
+      <figure class="work reveal" style="--h:262">
+        <div class="mock">
+          <div class="mock-bar"><i></i><i></i><i></i></div>
+          <div class="mock-body">
+            <div class="mk-nav"></div>
+            <div class="mk-grid"><b></b><b></b><b></b><b></b><b></b><b></b></div>
+          </div>
+        </div>
+        <figcaption><strong>E-commerce</strong><span>Moda Feminina</span></figcaption>
+      </figure>
+
+      <figure class="work reveal" style="--h:322">
+        <div class="mock mock-brand">
+          <div class="mk-logo r">C</div>
+          <div class="mk-pal"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <figcaption><strong>Logo & Branding</strong><span>Cafeteria Artesanal</span></figcaption>
+      </figure>
+
+      <figure class="work reveal" style="--h:200">
+        <div class="mock">
+          <div class="mock-bar"><i></i><i></i><i></i></div>
+          <div class="mock-body">
+            <div class="mk-split"><div class="mk-txt"><b></b><b></b><b class="s"></b></div><div class="mk-img"></div></div>
+            <div class="mk-row"><b></b><b></b><b></b><b></b></div>
+          </div>
+        </div>
+        <figcaption><strong>Site Institucional</strong><span>Escritório de Advocacia</span></figcaption>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
 <!-- ══════════ SERVIÇOS ══════════ -->
-<section class="section" id="servicos">
+<section class="section section-alt" id="servicos">
   <div class="container">
     <p class="section-tag reveal">O que fazemos</p>
-    <h2 class="reveal">Serviços que dão <span class="grad">vida</span> à sua marca</h2>
+    <h2 class="reveal">Serviços</h2>
     <div class="cards">
       <article class="card reveal">
-        <div class="card-icon">🖥️</div>
+        <svg class="card-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         <h3>Criação de Sites</h3>
         <p>Sites institucionais, landing pages e lojas virtuais. Design exclusivo, 100% responsivo, rápido e otimizado para o Google.</p>
       </article>
       <article class="card reveal">
-        <div class="card-icon">🎨</div>
+        <svg class="card-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7-4-4-7 7-3 7z"/><path d="M18 13l-4-4"/><path d="M2 22l3-1"/></svg>
         <h3>Design Gráfico</h3>
         <p>Peças para redes sociais, materiais impressos, apresentações e campanhas com identidade forte e consistente.</p>
       </article>
       <article class="card reveal">
-        <div class="card-icon">✒️</div>
+        <svg class="card-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>
         <h3>Criação de Logo</h3>
         <p>Logotipos e identidade visual completa: cores, tipografia e manual de marca para sua empresa se destacar.</p>
       </article>
       <article class="card reveal">
-        <div class="card-icon">🚀</div>
+        <svg class="card-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
         <h3>Presença Digital</h3>
         <p>Estratégia digital, otimização de perfis e evolução contínua do seu site com suporte técnico dedicado.</p>
       </article>
@@ -91,7 +158,7 @@
   <div class="container band-inner">
     <div class="band-text reveal">
       <p class="section-tag">A melhor escolha</p>
-      <h2>Um site institucional é <span class="grad">só vantagens</span></h2>
+      <h2>Um site institucional é só vantagens</h2>
       <p class="lead">O site é a porta de entrada da sua empresa. É onde clientes conhecem sua história, seus serviços e o que torna você único.</p>
     </div>
     <ol class="adv-list">
@@ -108,36 +175,20 @@
 <section class="section" id="diferenciais">
   <div class="container">
     <p class="section-tag reveal">Sabe o melhor?</p>
-    <h2 class="reveal">A Alive tem as melhores condições para o seu projeto</h2>
+    <h2 class="reveal">As melhores condições para o seu projeto</h2>
     <div class="feats">
-      <div class="feat reveal">📱 Formato 100% responsivo</div>
-      <div class="feat reveal">🛠️ Suporte técnico após a entrega</div>
-      <div class="feat reveal">🔗 URLs amigáveis e SEO</div>
-      <div class="feat reveal">⚙️ Conteúdo administrável por você</div>
-      <div class="feat reveal">✨ Layout exclusivo e personalizado</div>
-      <div class="feat reveal">⚡ Carregamento ultrarrápido</div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ PORTFÓLIO ══════════ -->
-<section class="section section-alt" id="portfolio">
-  <div class="container">
-    <p class="section-tag reveal">Portfólio</p>
-    <h2 class="reveal">Do que somos capazes? <span class="grad">De te surpreender!</span></h2>
-    <div class="portfolio">
-      <figure class="work reveal" style="--h:210"><figcaption><strong>Site Institucional</strong><span>Clínica Odontológica</span></figcaption></figure>
-      <figure class="work reveal" style="--h:280"><figcaption><strong>Identidade Visual</strong><span>Cafeteria Artesanal</span></figcaption></figure>
-      <figure class="work reveal" style="--h:340"><figcaption><strong>Landing Page</strong><span>Curso Online</span></figcaption></figure>
-      <figure class="work reveal" style="--h:25"><figcaption><strong>Logo & Branding</strong><span>Studio Fitness</span></figcaption></figure>
-      <figure class="work reveal" style="--h:120"><figcaption><strong>E-commerce</strong><span>Moda Feminina</span></figcaption></figure>
-      <figure class="work reveal" style="--h:180"><figcaption><strong>Site Institucional</strong><span>Escritório de Advocacia</span></figcaption></figure>
+      <div class="feat reveal">Formato 100% responsivo</div>
+      <div class="feat reveal">Suporte técnico após a entrega</div>
+      <div class="feat reveal">URLs amigáveis e SEO</div>
+      <div class="feat reveal">Conteúdo administrável por você</div>
+      <div class="feat reveal">Layout exclusivo e personalizado</div>
+      <div class="feat reveal">Carregamento ultrarrápido</div>
     </div>
   </div>
 </section>
 
 <!-- ══════════ PLANOS ══════════ -->
-<section class="section" id="planos">
+<section class="section section-alt" id="planos">
   <div class="container">
     <p class="section-tag reveal">Investimento</p>
     <h2 class="reveal">Planos sob medida para cada momento</h2>
@@ -182,15 +233,15 @@
 </section>
 
 <!-- ══════════ CONTATO ══════════ -->
-<section class="section section-alt" id="contato">
+<section class="section" id="contato">
   <div class="container contact-grid">
     <div class="reveal">
       <p class="section-tag">Entre em contato</p>
-      <h2>Fale conosco <span class="grad">agora mesmo!</span></h2>
+      <h2>Vamos tirar seu projeto do papel?</h2>
       <p class="lead">Conte sua ideia e receba uma proposta personalizada. Respondemos rápido.</p>
       <div class="contact-info">
-        <p>📧 contato@alivedigital.com.br</p>
-        <p>📱 WhatsApp: (00) 90000-0000</p>
+        <p>contato@alivedigital.com.br</p>
+        <p>WhatsApp: (00) 90000-0000</p>
       </div>
     </div>
     <form class="contact-form reveal" id="contactForm">
@@ -206,7 +257,7 @@
       </select>
       <textarea name="mensagem" rows="4" placeholder="Digite sua mensagem" required></textarea>
       <button type="submit" class="btn btn-primary">Enviar mensagem</button>
-      <p class="form-ok" id="formOk" hidden>✅ Mensagem registrada! Em breve entraremos em contato.</p>
+      <p class="form-ok" id="formOk" hidden>Mensagem registrada! Em breve entraremos em contato.</p>
     </form>
   </div>
 </section>
@@ -220,6 +271,6 @@
   </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script src="js/main.js?v=2"></script>
 </body>
 </html>
