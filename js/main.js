@@ -40,42 +40,7 @@ const ioCount = new IntersectionObserver(entries => {
 }, { threshold: 0.5 });
 document.querySelectorAll('[data-count]').forEach(el => ioCount.observe(el));
 
-// Partículas do hero
-const canvas = document.getElementById('particles');
-if (canvas) {
-  const ctx = canvas.getContext('2d');
-  let W, H, pts;
-  function resize() {
-    W = canvas.width = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
-    pts = Array.from({ length: Math.min(70, W / 16) }, () => ({
-      x: Math.random() * W, y: Math.random() * H,
-      vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
-      r: Math.random() * 1.8 + .6
-    }));
-  }
-  resize();
-  addEventListener('resize', resize);
-  (function draw() {
-    ctx.clearRect(0, 0, W, H);
-    pts.forEach(p => {
-      p.x = (p.x + p.vx + W) % W;
-      p.y = (p.y + p.vy + H) % H;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, 7);
-      ctx.fillStyle = 'rgba(90,160,255,.55)';
-      ctx.fill();
-    });
-    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
-      const a = pts[i], b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (d < 130) {
-        ctx.strokeStyle = `rgba(80,140,255,${.16 * (1 - d / 130)})`;
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-      }
-    }
-    requestAnimationFrame(draw);
-  })();
-}
+// Efeito de fluido do hero: ver js/fluid.js
 
 // Formulário de contato (demonstração: registra localmente)
 document.getElementById('contactForm')?.addEventListener('submit', e => {
