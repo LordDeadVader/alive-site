@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body class="dash">
 
@@ -21,14 +21,19 @@
 </header>
 
 <main class="dash-main">
-  <h1>Clientes & Sites</h1>
-  <p class="dash-sub">Controle de projetos, planos, mensalidades e pagamentos.</p>
+  <div class="dash-head">
+    <div>
+      <h1>Clientes & Sites</h1>
+      <p class="dash-sub">Projetos, planos, mensalidades e cobranças.</p>
+    </div>
+    <button class="btn btn-primary btn-sm" id="btnNovo">+ Novo cliente</button>
+  </div>
 
   <div class="kpis">
     <div class="kpi k-blue"><strong id="kTotal">0</strong><span>Clientes</span></div>
     <div class="kpi k-green"><strong id="kNoAr">0</strong><span>Sites no ar</span></div>
     <div class="kpi k-blue"><strong id="kMRR">R$ 0</strong><span>Receita recorrente / mês</span></div>
-    <div class="kpi k-red"><strong id="kAtraso">0</strong><span>Pagamentos em atraso</span></div>
+    <div class="kpi k-amber"><strong id="kVencendo">0</strong><span>Vencendo em 7 dias</span></div>
   </div>
 
   <div class="dash-bar">
@@ -46,20 +51,10 @@
       <option value="Manutenção">Manutenção</option>
       <option value="Pausado">Pausado</option>
     </select>
-    <button class="btn btn-primary btn-sm" id="btnNovo">+ Novo cliente</button>
   </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Cliente</th><th>Plano</th><th>Implementação</th><th>Recorrência</th><th>Pagamento</th><th>Site</th><th>Próx. venc.</th><th></th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div class="empty" id="empty" hidden>Nenhum cliente encontrado. Clique em <strong>+ Novo cliente</strong> para começar.</div>
-  </div>
+  <div class="ccards" id="cards"></div>
+  <div class="empty" id="empty" hidden>Nenhum cliente encontrado. Clique em <strong>+ Novo cliente</strong> para começar.</div>
 </main>
 
 <!-- Modal cadastro/edição -->
@@ -69,7 +64,7 @@
     <form id="clientForm">
       <input type="hidden" id="cId">
       <label>Nome do cliente <input type="text" id="cNome" required></label>
-      <label>Contato (WhatsApp / e-mail) <input type="text" id="cContato"></label>
+      <label>Contato (nome — telefone) <input type="text" id="cContato" placeholder="Fulano — +55 42 99999-9999"></label>
       <label>Site (endereço) <input type="text" id="cSite" placeholder="www.exemplo.com.br"></label>
       <label>Repositório (GitHub) <input type="text" id="cRepo" placeholder="github.com/usuario/projeto"></label>
       <label>Plano
@@ -116,6 +111,68 @@
   </div>
 </div>
 
-<script src="js/dashboard.js?v=3"></script>
+<!-- Modal cobrança PIX -->
+<div class="modal" id="chargeModal" hidden>
+  <div class="modal-card">
+    <h2>Emitir cobrança <span id="chClienteNome" class="ch-nome"></span></h2>
+    <form id="chargeForm">
+      <input type="hidden" id="chClienteId">
+      <label>Referente a
+        <select id="chTipo">
+          <option value="rec">Mensalidade / recorrência</option>
+          <option value="impl">Implementação</option>
+          <option value="outro">Outro valor</option>
+        </select>
+      </label>
+      <div class="field-pair">
+        <label>Valor (R$) <input type="number" id="chValor" min="0.01" step="0.01" required></label>
+        <label>Vencimento <input type="date" id="chVenc" required></label>
+      </div>
+      <label>Descrição <input type="text" id="chDesc" placeholder="Ex.: Mensalidade — Setembro/2026"></label>
+      <label>Sua chave PIX <input type="text" id="chPixKey" required></label>
+      <button type="submit" class="btn btn-primary btn-sm">Gerar cobrança PIX</button>
+    </form>
+
+    <div id="chargeResult" hidden>
+      <div class="qr-wrap"><div id="qrBox"></div></div>
+      <label class="copy-label">PIX copia e cola
+        <textarea id="pixCode" rows="3" readonly></textarea>
+      </label>
+      <div class="charge-actions">
+        <button class="btn btn-ghost btn-sm" id="btnCopiar">Copiar código</button>
+        <button class="btn btn-primary btn-sm" id="btnWhats">Enviar por WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" id="btnImprimir">Imprimir</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="btnChFechar">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Documento de cobrança (somente impressão) -->
+<div id="printArea" aria-hidden="true">
+  <div class="pr-head">
+    <img src="assets/alive-logo.png" alt="Alive">
+    <div>
+      <h1>Cobrança</h1>
+      <p>Alive — Criação de Sites & Design<br>Davi Henrique · (42) 99931-8784 · davihenriqueded@gmail.com</p>
+    </div>
+  </div>
+  <table class="pr-table">
+    <tr><th>Cliente</th><td id="prCliente"></td></tr>
+    <tr><th>Descrição</th><td id="prDesc"></td></tr>
+    <tr><th>Valor</th><td id="prValor"></td></tr>
+    <tr><th>Vencimento</th><td id="prVenc"></td></tr>
+  </table>
+  <div class="pr-qr">
+    <img id="prQr" alt="QR Code PIX">
+    <p>Pague com PIX: aponte a câmera do seu banco para o QR Code<br>ou use o código copia e cola abaixo.</p>
+  </div>
+  <p class="pr-code" id="prCode"></p>
+</div>
+
+<script src="js/qrcode.min.js"></script>
+<script src="js/dashboard.js?v=4"></script>
 </body>
 </html>
