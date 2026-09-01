@@ -264,6 +264,7 @@
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) { setTimeout(resize, 400); return; }
     const dpr = Math.min(devicePixelRatio || 1, 1.5);
     canvas.width = Math.max(1, Math.floor(rect.width * dpr));
     canvas.height = Math.max(1, Math.floor(rect.height * dpr));
@@ -405,6 +406,7 @@
   }
 
   function loop(now) {
+    if (!velocity) { requestAnimationFrame(loop); return; } // FBOs ainda não criados (canvas oculto)
     const dt = Math.min((now - lastFrame) / 1000, 1 / 30);
     lastFrame = now;
 
