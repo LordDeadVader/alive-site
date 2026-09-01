@@ -52,3 +52,15 @@ document.getElementById('contactForm')?.addEventListener('submit', e => {
   e.target.reset();
   document.getElementById('formOk').hidden = false;
 });
+
+// Acesso discreto à área do cliente: 5 cliques na logo do rodapé
+const footerLogo = document.getElementById('footerLogo');
+if (footerLogo) {
+  let clicks = 0, timer;
+  footerLogo.addEventListener('click', () => {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(() => clicks = 0, 2500);
+    if (clicks >= 5) location.href = 'login.html';
+  });
+}

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body class="dash">
 
@@ -21,28 +21,29 @@
 </header>
 
 <main class="dash-main">
-  <h1>Gestão de Clientes</h1>
-  <p class="dash-sub">Acompanhe seus projetos, clientes e pagamentos.</p>
+  <h1>Clientes & Sites</h1>
+  <p class="dash-sub">Controle de projetos, planos, mensalidades e pagamentos.</p>
 
   <div class="kpis">
-    <div class="kpi k-blue"><strong id="kTotal">0</strong><span>Clientes ativos</span></div>
-    <div class="kpi k-green"><strong id="kPago">R$ 0</strong><span>Recebido (pago)</span></div>
-    <div class="kpi k-amber"><strong id="kPendente">R$ 0</strong><span>A receber (pendente)</span></div>
-    <div class="kpi k-red"><strong id="kAtrasado">R$ 0</strong><span>Em atraso</span></div>
+    <div class="kpi k-blue"><strong id="kTotal">0</strong><span>Clientes</span></div>
+    <div class="kpi k-green"><strong id="kNoAr">0</strong><span>Sites no ar</span></div>
+    <div class="kpi k-blue"><strong id="kMRR">R$ 0</strong><span>Receita recorrente / mês</span></div>
+    <div class="kpi k-red"><strong id="kAtraso">0</strong><span>Pagamentos em atraso</span></div>
   </div>
 
   <div class="dash-bar">
-    <input type="search" id="busca" placeholder="🔍 Buscar cliente ou projeto...">
+    <input type="search" id="busca" placeholder="Buscar cliente ou site...">
     <select id="fPagamento">
       <option value="">Pagamento: todos</option>
-      <option value="Pago">Pago</option>
+      <option value="Em dia">Em dia</option>
       <option value="Pendente">Pendente</option>
       <option value="Atrasado">Atrasado</option>
     </select>
     <select id="fStatus">
-      <option value="">Projeto: todos</option>
-      <option value="Em andamento">Em andamento</option>
-      <option value="Concluído">Concluído</option>
+      <option value="">Site: todos</option>
+      <option value="No ar">No ar</option>
+      <option value="Em desenvolvimento">Em desenvolvimento</option>
+      <option value="Manutenção">Manutenção</option>
       <option value="Pausado">Pausado</option>
     </select>
     <button class="btn btn-primary btn-sm" id="btnNovo">+ Novo cliente</button>
@@ -52,7 +53,7 @@
     <table>
       <thead>
         <tr>
-          <th>Cliente</th><th>Projeto</th><th>Valor</th><th>Pagamento</th><th>Status</th><th>Prazo</th><th></th>
+          <th>Cliente</th><th>Plano</th><th>Implementação</th><th>Recorrência</th><th>Pagamento</th><th>Site</th><th>Próx. venc.</th><th></th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -69,20 +70,44 @@
       <input type="hidden" id="cId">
       <label>Nome do cliente <input type="text" id="cNome" required></label>
       <label>Contato (WhatsApp / e-mail) <input type="text" id="cContato"></label>
-      <label>Projeto / serviço <input type="text" id="cProjeto" required placeholder="Ex.: Site institucional, Logo..."></label>
-      <label>Valor (R$) <input type="number" id="cValor" min="0" step="0.01" required></label>
+      <label>Site (endereço) <input type="text" id="cSite" placeholder="www.exemplo.com.br"></label>
+      <label>Repositório (GitHub) <input type="text" id="cRepo" placeholder="github.com/usuario/projeto"></label>
+      <label>Plano
+        <select id="cPlano">
+          <option>Essencial</option>
+          <option>Profissional</option>
+          <option>Premium</option>
+          <option>Condição Especial</option>
+        </select>
+      </label>
+      <div class="field-pair">
+        <label>Implementação (R$) <input type="number" id="cImplValor" min="0" step="0.01" value="0"></label>
+        <label>Situação
+          <select id="cImplStatus">
+            <option>Pendente</option><option>Pago</option>
+          </select>
+        </label>
+      </div>
+      <div class="field-pair">
+        <label>Recorrência (R$) <input type="number" id="cRecValor" min="0" step="0.01" value="0"></label>
+        <label>Período
+          <select id="cRecPeriodo">
+            <option>Mensal</option><option>Anual</option>
+          </select>
+        </label>
+      </div>
       <label>Situação do pagamento
         <select id="cPagamento">
-          <option>Pendente</option><option>Pago</option><option>Atrasado</option>
+          <option>Em dia</option><option>Pendente</option><option>Atrasado</option>
         </select>
       </label>
-      <label>Status do projeto
-        <select id="cStatus">
-          <option>Em andamento</option><option>Concluído</option><option>Pausado</option>
+      <label>Status do site
+        <select id="cStatusSite">
+          <option>Em desenvolvimento</option><option>No ar</option><option>Manutenção</option><option>Pausado</option>
         </select>
       </label>
-      <label>Prazo de entrega <input type="date" id="cPrazo"></label>
-      <label>Observações <textarea id="cObs" rows="2"></textarea></label>
+      <label>Próximo vencimento <input type="date" id="cProxVenc"></label>
+      <label>Observações <textarea id="cObs" rows="3"></textarea></label>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost btn-sm" id="btnCancelar">Cancelar</button>
         <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
@@ -91,6 +116,6 @@
   </div>
 </div>
 
-<script src="js/dashboard.js"></script>
+<script src="js/dashboard.js?v=3"></script>
 </body>
 </html>
