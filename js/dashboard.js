@@ -298,14 +298,115 @@ document.getElementById('btnCopiar').addEventListener('click', async () => {
   setTimeout(() => document.getElementById('btnCopiar').textContent = 'Copiar código', 2000);
 });
 
+// ─── Arquivo de cobrança (imagem PNG) ───
+function qrDataUrl() {
+  const c = document.querySelector('#qrBox canvas');
+  const i = document.querySelector('#qrBox img');
+  return c ? c.toDataURL('image/png') : (i ? i.src : '');
+}
+
+function chargeImage() {
+  return new Promise(resolve => {
+    const { cliente, valor, venc, desc, code } = currentCharge;
+    const W = 1080, H = 1660;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const x = cv.getContext('2d');
+
+    // fundo e cabeçalho
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+    const grad = x.createLinearGradient(0, 0, W, 0);
+    grad.addColorStop(0, '#2d5fd0'); grad.addColorStop(1, '#37d6ff');
+    x.fillStyle = grad; x.fillRect(0, 0, W, 14);
+
+    const logo = new Image();
+    logo.onload = () => {
+      const lw = 260, lh = lw * (logo.height / logo.width);
+      x.drawImage(logo, 70, 60, lw, lh);
+
+      x.fillStyle = '#0a1226';
+      x.font = '700 52px Sora, Arial';
+      x.fillText('Cobrança', 70, 300);
+      x.fillStyle = '#667'; x.font = '400 30px Inter, Arial';
+      x.fillText('Alive — Criação de Sites & Design', 70, 348);
+
+      // dados
+      const rows = [['Cliente', cliente.nome], ['Descrição', desc], ['Valor', fmt(valor)], ['Vencimento', venc]];
+      let y = 440;
+      rows.forEach(([k, v]) => {
+        x.fillStyle = '#8a93a8'; x.font = '600 26px Inter, Arial';
+        x.fillText(k.toUpperCase(), 70, y);
+        x.fillStyle = '#0a1226'; x.font = (k === 'Valor' ? '800 46px' : '600 36px') + ' Sora, Arial';
+        x.fillText(String(v).slice(0, 48), 70, y + 46);
+        x.strokeStyle = '#e3e8f2'; x.beginPath(); x.moveTo(70, y + 74); x.lineTo(W - 70, y + 74); x.stroke();
+        y += 130;
+      });
+
+      // QR
+      const qr = new Image();
+      qr.onload = () => {
+        const qs = 380;
+        x.fillStyle = '#f4f7fd';
+        roundRect(x, 70, y + 10, W - 140, qs + 150, 26); x.fill();
+        x.drawImage(qr, (W - qs) / 2, y + 40, qs, qs);
+        x.fillStyle = '#3a4358'; x.font = '500 28px Inter, Arial'; x.textAlign = 'center';
+        x.fillText('Pague com PIX: aponte a câmera do app do seu banco', W / 2, y + qs + 90);
+        x.fillText('ou use o código copia e cola enviado junto.', W / 2, y + qs + 128);
+        x.textAlign = 'left';
+
+        // rodapé
+        x.fillStyle = '#8a93a8'; x.font = '400 26px Inter, Arial';
+        x.fillText('Davi Henrique · (42) 99931-8784 · davihenriqueded@gmail.com', 70, H - 60);
+
+        cv.toBlob(b => resolve(b), 'image/png');
+      };
+      qr.src = qrDataUrl();
+    };
+    logo.src = 'assets/alive-logo.png';
+  });
+}
+
+function roundRect(x, px, py, w, h, r) {
+  x.beginPath();
+  x.moveTo(px + r, py);
+  x.arcTo(px + w, py, px + w, py + h, r);
+  x.arcTo(px + w, py + h, px, py + h, r);
+  x.arcTo(px, py + h, px, py, r);
+  x.arcTo(px, py, px + w, py, r);
+  x.closePath();
+}
+
+function chargeFileName() {
+  const { cliente } = currentCharge;
+  return 'cobranca-' + cliente.nome.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
+}
+
+document.getElementById('btnArquivo').addEventListener('click', async () => {
+  if (!currentCharge) return;
+  const blob = await chargeImage();
+  const file = new File([blob], chargeFileName(), { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'Cobrança Alive' });
+      return;
+    } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  // fallback: baixa o arquivo (anexe no WhatsApp em seguida)
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = chargeFileName();
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+// Mensagem curta: descrição + código copiável (o arquivo vai em anexo)
 document.getElementById('btnWhats').addEventListener('click', () => {
   if (!currentCharge) return;
   const { cliente, valor, venc, desc, code } = currentCharge;
   const primeiroNome = (cliente.contato || cliente.nome).split(/[—-]/)[0].trim().split(' ')[0];
-  const msg = `Olá, ${primeiroNome}! Segue a cobrança da Alive:\n\n` +
-    `📋 ${desc}\n💰 Valor: ${fmt(valor)}\n📅 Vencimento: ${venc}\n\n` +
-    `Para pagar, copie o código PIX abaixo e cole no app do seu banco (opção "PIX copia e cola"):\n\n${code}\n\n` +
-    `Qualquer dúvida, estou à disposição!`;
+  const msg = `Olá, ${primeiroNome}! Segue a cobrança em anexo 📎\n` +
+    `${desc} · ${fmt(valor)} · vence ${venc}\n\n` +
+    `PIX copia e cola:\n${code}`;
   const fone = clientPhone(cliente);
   window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
 });
