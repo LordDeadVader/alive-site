@@ -2,8 +2,8 @@
    A credencial não fica em texto puro: o par usuário:senha é
    comparado por hash SHA-256. */
 const AUTH_HASHES = [
-  '1811faaaf596016e099f8e220d66e284284f1ae60d3195468b2b640234521dc6', // DAVI
-  '9103aee92e45283053eb18a2ff26a40bf9de5ec69eaa1e849cf0a2560904a8f6'  // ADMIN (provisório)
+  '5bc573ce735e6befdcee538f79cf5ee82a24eb1fb3070bd5060968f60d413028', // DAVI
+  '4700685aaf8dde573aa8b5f059c52a9f3ede216871dce251368a59db34a40e54'  // ADMIN (provisório)
 ];
 
 async function sha256(text) {
