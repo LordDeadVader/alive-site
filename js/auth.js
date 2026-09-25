@@ -2,7 +2,7 @@
    A credencial não fica em texto puro: o par usuário:senha é
    comparado por hash SHA-256. */
 const AUTH_HASHES = [
-  '5bc573ce735e6befdcee538f79cf5ee82a24eb1fb3070bd5060968f60d413028', // DAVI
+  '530defb673838e0801326e26d181d8c2b1ffce9b56ed75784bf67e9a6c24e26d', // DAVI
   '4700685aaf8dde573aa8b5f059c52a9f3ede216871dce251368a59db34a40e54'  // ADMIN (provisório)
 ];
 
