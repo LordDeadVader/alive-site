@@ -53,11 +53,24 @@ if (!localStorage.getItem(SEED_FLAG)) {
 }
 
 // Migração: implementações do PS Corretor e Trans Empri já foram pagas
-if (!localStorage.getItem('alive_patch_impl_pago')) {
+if (!localStorage.getItem('alive_patch_impl_pago_v2')) {
   const list = load();
-  list.forEach(c => { if (['PS Corretor', 'Trans Empri'].includes(c.nome)) c.implStatus = 'Pago'; });
+  list.forEach(c => {
+    if (['PS Corretor', 'Trans Empri'].includes(c.nome)) c.implStatus = 'Pago';
+    if (c.nome === 'PS Corretor') {
+      const hoje = new Date();
+      let mes = hoje.getMonth() + 1;
+      let ano = hoje.getFullYear();
+      if (hoje.getDate() > 10) {
+        mes++;
+        if (mes > 12) { mes = 1; ano++; }
+      }
+      c.proxVenc = `${ano}-${String(mes).padStart(2, '0')}-10`;
+      c.pagamento = 'Em dia';
+    }
+  });
   save(list);
-  localStorage.setItem('alive_patch_impl_pago', '1');
+  localStorage.setItem('alive_patch_impl_pago_v2', '1');
 }
 
 const cardsEl = document.getElementById('cards');
