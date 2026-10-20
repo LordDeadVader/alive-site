@@ -2,6 +2,8 @@
 
 Site institucional da **Alive**, agência de criação de sites, design gráfico e identidade visual.
 
+> 📘 Para continuar o trabalho em outro computador, veja o **[GUIA.md](GUIA.md)**: estrutura, painel, cobrança PIX, publicação e materiais fora do git.
+
 ## ✨ Recursos
 
 - **Design moderno dark/tech** com efeitos parallax, partículas animadas e reveal on scroll
