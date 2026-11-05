@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Kadam Cut · Painel Alive</title>
+<link rel="icon" type="image/png" href="assets/alive-logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/painel.css?v=1">
+</head>
+<body>
+
+<header class="dash-top">
+  <img src="assets/alive-logo.png" alt="Alive">
+  <nav class="dash-nav">
+    <a href="dashboard.html">Clientes e sites</a>
+    <a href="gestao-kadam.html" class="on">Kadam Cut</a>
+  </nav>
+  <div class="dash-user">
+    <button class="btn btn-sm" id="btnSair" hidden>Sair</button>
+  </div>
+</header>
+
+<main class="dash-main">
+
+  <!-- Entrada: senha da gestão, conferida no servidor -->
+  <section id="telaLogin" class="login-box" hidden>
+    <div class="box">
+      <div class="box-head"><h2>Entrar na gestão do Kadam Cut</h2></div>
+      <form id="formLogin" class="box-body" style="display:flex;flex-direction:column;gap:12px">
+        <label>Senha da gestão
+          <input type="password" id="senha" autocomplete="current-password" required>
+          <small>É a senha guardada na Cloudflare (ADMIN_SENHA), não a do site.</small>
+        </label>
+        <button class="btn btn-primary" type="submit">Entrar</button>
+        <p id="loginMsg" class="aviso aviso-bad" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="telaGestao" hidden>
+    <div class="dash-head">
+      <div>
+        <h1>Kadam Cut</h1>
+        <p class="dash-sub">Licenças, computadores ativados e vendas.</p>
+      </div>
+      <div class="linha">
+        <button class="btn btn-sm" id="btnAtualizar">Atualizar</button>
+        <button class="btn btn-primary btn-sm" id="btnEmitir">Nova licença</button>
+      </div>
+    </div>
+
+    <div id="avisos"></div>
+
+    <div class="tabs">
+      <button data-tab="resumo" class="on">Resumo</button>
+      <button data-tab="licencas">Licenças<span class="count" id="nEntregar" hidden></span></button>
+      <button data-tab="vendas">Vendas</button>
+      <button data-tab="config">Configurações</button>
+    </div>
+
+    <!-- Resumo -->
+    <div id="sec-resumo">
+      <div class="kpis">
+        <div class="kpi"><span>Licenças ativas</span><strong id="kLic">0</strong></div>
+        <div class="kpi"><span>Computadores ativados</span><strong id="kPcs">0</strong></div>
+        <div class="kpi k-amber"><span>Chaves para enviar</span><strong id="kEntregar">0</strong></div>
+        <div class="kpi"><span>Vendido no mês</span><strong id="kMes">R$ 0</strong><small id="kMesQtd"></small></div>
+        <div class="kpi"><span>Recebido (sem taxas)</span><strong id="kLiq">R$ 0</strong><small id="kLiqQtd"></small></div>
+      </div>
+      <div class="box">
+        <div class="box-head"><h3>O que aconteceu por último</h3></div>
+        <ul class="hist" id="histResumo"></ul>
+      </div>
+    </div>
+
+    <!-- Licenças -->
+    <div id="sec-licencas" hidden>
+      <div class="dash-bar">
+        <input type="search" id="buscaLic" placeholder="Buscar por nome, e-mail ou número">
+        <select id="fLic">
+          <option value="">Todas</option>
+          <option value="entregar">Chave para enviar</option>
+          <option value="ativa">Ativas</option>
+          <option value="bloqueada">Bloqueadas</option>
+        </select>
+        <button class="btn btn-sm" id="btnCsv">Baixar planilha</button>
+      </div>
+      <div class="box table-wrap">
+        <table>
+          <thead><tr><th>Nº</th><th>Cliente</th><th>Tipo</th><th>Computadores</th><th class="num">Valor</th><th>Suporte até</th><th>Situação</th></tr></thead>
+          <tbody id="tbLic"></tbody>
+        </table>
+      </div>
+      <p class="muted">Clique numa linha para ver a chave, os computadores e as ações.</p>
+    </div>
+
+    <!-- Vendas -->
+    <div id="sec-vendas" hidden>
+      <p class="muted" style="margin-bottom:12px">Cada compra iniciada no site. "Não concluída" quer dizer que a pessoa abriu o pagamento e não terminou.</p>
+      <div class="box table-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>Cliente</th><th>Pagamento</th><th class="num">Valor</th><th class="num">Taxa</th><th>Situação</th><th>Licença</th></tr></thead>
+          <tbody id="tbVendas"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Configurações -->
+    <div id="sec-config" hidden>
+      <div class="box">
+        <div class="box-head"><h3>Preços e regras</h3></div>
+        <form id="formConfig" class="form box-body">
+          <label>Preço no Pix (R$) <input type="number" step="0.01" min="1" id="cfPix"></label>
+          <label>Preço no cartão (R$) <input type="number" step="0.01" min="1" id="cfCartao"></label>
+          <label>Parcelas no cartão (máximo) <input type="number" min="1" max="12" id="cfParcelas"></label>
+          <label>Dias de suporte das novas licenças <input type="number" min="0" id="cfSuporte"></label>
+          <label>Dias entre trocas de computador <input type="number" min="0" id="cfTroca"></label>
+          <label>Versão atual do Kadam Cut <input type="text" id="cfVersao" placeholder="0.9.115"></label>
+          <label class="full">Link para baixar o instalador
+            <input type="url" id="cfLink" placeholder="https://drive.google.com/...">
+            <small>Vai no e-mail com a chave. No Drive, compartilhe como "Qualquer pessoa com o link".</small></label>
+          <label class="full">Nome do produto no Mercado Pago <input type="text" id="cfTitulo"></label>
+          <div class="full linha"><button class="btn btn-primary" type="submit">Salvar</button><span id="cfMsg" class="muted"></span></div>
+          <p class="full muted">O preço daqui é o valor cobrado no Mercado Pago. Se mudar, mude também o texto da página de vendas.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Detalhe da licença -->
+<div class="modal" id="mLic" hidden><div class="modal-card wide" id="mLicBody"></div></div>
+
+<!-- Nova licença -->
+<div class="modal" id="mEmitir" hidden>
+  <div class="modal-card wide">
+    <h2>Nova licença</h2>
+    <p class="muted" style="margin:-8px 0 16px">Para cortesias, parceiros e vendas fora do site (Pix direto, dinheiro). Compras feitas no site geram a licença sozinhas.</p>
+    <form id="formEmitir" class="form">
+      <label>Nome do cliente ou empresa <input type="text" id="emNome" required></label>
+      <label>E-mail <input type="email" id="emEmail" required></label>
+      <label>WhatsApp <input type="text" id="emWhats" placeholder="42 99999-9999"></label>
+      <label>Tipo
+        <select id="emTipo"><option value="individual">Individual (1 computador)</option><option value="empresa">Empresa (vários computadores)</option></select></label>
+      <label>Quantos computadores <input type="number" id="emPcs" min="1" max="255" value="1" disabled></label>
+      <label>Valor recebido (R$) <input type="number" id="emValor" min="0" step="0.01" value="0"><small>Deixe 0 para cortesia.</small></label>
+      <label>Forma de pagamento
+        <select id="emMeio"><option value="pix">Pix</option><option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option><option value="cartao">Cartão</option></select></label>
+      <label>Dias de suporte <input type="number" id="emSuporte" min="0" placeholder="Padrão das configurações"></label>
+      <label class="full">Observação <input type="text" id="emObs" placeholder="Ex.: parceiro, indicação"></label>
+      <p id="emMsg" class="full aviso aviso-bad" hidden></p>
+      <div class="full modal-actions">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Emitir licença</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/gestao-kadam.js?v=1"></script>
+</body>
+</html>

@@ -130,9 +130,9 @@ function render() {
         <span class="tag ${tagClass[c.pagamento] || ''}">${c.pagamento}</span>
       </div>
       <div class="ccard-links">
-        ${c.site ? `<a class="mini-link" href="${esc(href(c.site))}" target="_blank" rel="noopener">🌐 Ver site</a>` : ''}
-        ${c.repo ? `<a class="mini-link" href="${esc(href(c.repo))}" target="_blank" rel="noopener">&lt;/&gt; Repositório</a>` : ''}
-        ${clientPhone(c) ? `<a class="mini-link" href="https://wa.me/${clientPhone(c)}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}
+        ${c.site ? `<a class="mini-link" href="${esc(href(c.site))}" target="_blank" rel="noopener">Ver site</a>` : ''}
+        ${c.repo ? `<a class="mini-link" href="${esc(href(c.repo))}" target="_blank" rel="noopener">Repositório</a>` : ''}
+        ${clientPhone(c) ? `<a class="mini-link" href="https://wa.me/${clientPhone(c)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
       </div>
       <div class="ccard-grid">
         <div><span>Plano</span><strong>${esc(c.plano)}</strong></div>
@@ -140,12 +140,12 @@ function render() {
         <div><span>Recorrência</span><strong>${fmt(c.recValor)} <small>/ ${c.recPeriodo === 'Anual' ? 'ano' : 'mês'}</small></strong></div>
         <div><span>Site</span><strong><em class="tag ${tagClass[c.statusSite] || ''}">${c.statusSite}</em></strong></div>
       </div>
-      ${v ? `<div class="ccard-venc ${v.cls}">⏰ ${v.txt}</div>` : ''}
+      ${v ? `<div class="ccard-venc ${v.cls}">${v.txt}</div>` : ''}
       ${c.obs ? `<details class="ccard-obs"><summary>Observações</summary><p>${esc(c.obs)}</p></details>` : ''}
       <div class="ccard-actions">
-        <button class="btn btn-primary btn-sm" data-charge="${c.id}">⚡ Cobrança PIX</button>
-        <button class="icon-btn" data-edit="${c.id}">✏️ Editar</button>
-        <button class="icon-btn" data-del="${c.id}">🗑️</button>
+        <button class="btn btn-primary btn-sm" data-charge="${c.id}">Cobrança Pix</button>
+        <button class="icon-btn" data-edit="${c.id}">Editar</button>
+        <button class="icon-btn" data-del="${c.id}">Excluir</button>
       </div>
     </article>`;
   }).join('');
@@ -307,7 +307,7 @@ chForm.addEventListener('submit', async e => {
 
 document.getElementById('btnCopiar').addEventListener('click', async () => {
   await navigator.clipboard.writeText(document.getElementById('pixCode').value);
-  document.getElementById('btnCopiar').textContent = '✓ Copiado!';
+  document.getElementById('btnCopiar').textContent = 'Copiado';
   setTimeout(() => document.getElementById('btnCopiar').textContent = 'Copiar código', 2000);
 });
 

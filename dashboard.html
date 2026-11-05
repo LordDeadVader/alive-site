@@ -3,37 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Gestão — Alive</title>
+<title>Clientes e sites · Painel Alive</title>
 <link rel="icon" type="image/png" href="assets/alive-logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=4">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/painel.css?v=1">
 </head>
 <body class="dash">
 
 <header class="dash-top">
   <img src="assets/alive-logo.png" alt="Alive">
+  <nav class="dash-nav">
+    <a href="dashboard.html" class="on">Clientes e sites</a>
+    <a href="gestao-kadam.html">Kadam Cut</a>
+  </nav>
   <div class="dash-user">
     <span id="hello"></span>
-    <button class="btn btn-ghost btn-sm" id="btnLogout">Sair</button>
+    <button class="btn btn-sm" id="btnLogout">Sair</button>
   </div>
 </header>
 
 <main class="dash-main">
   <div class="dash-head">
     <div>
-      <h1>Clientes & Sites</h1>
+      <h1>Clientes e sites</h1>
       <p class="dash-sub">Projetos, planos, mensalidades e cobranças.</p>
     </div>
-    <button class="btn btn-primary btn-sm" id="btnNovo">+ Novo cliente</button>
+    <button class="btn btn-primary btn-sm" id="btnNovo">Novo cliente</button>
   </div>
 
   <div class="kpis">
-    <div class="kpi k-blue"><strong id="kTotal">0</strong><span>Clientes</span></div>
-    <div class="kpi k-green"><strong id="kNoAr">0</strong><span>Sites no ar</span></div>
-    <div class="kpi k-blue"><strong id="kMRR">R$ 0</strong><span>Receita recorrente / mês</span></div>
-    <div class="kpi k-amber"><strong id="kVencendo">0</strong><span>Vencendo em 7 dias</span></div>
+    <div class="kpi"><span>Clientes</span><strong id="kTotal">0</strong></div>
+    <div class="kpi"><span>Sites no ar</span><strong id="kNoAr">0</strong></div>
+    <div class="kpi"><span>Recebimento mensal</span><strong id="kMRR">R$ 0</strong></div>
+    <div class="kpi k-amber"><span>Vencendo em 7 dias</span><strong id="kVencendo">0</strong></div>
   </div>
 
   <div class="dash-bar">
@@ -54,7 +56,7 @@
   </div>
 
   <div class="ccards" id="cards"></div>
-  <div class="empty" id="empty" hidden>Nenhum cliente encontrado. Clique em <strong>+ Novo cliente</strong> para começar.</div>
+  <div class="empty" id="empty" hidden>Nenhum cliente encontrado. Clique em <strong>Novo cliente</strong> para começar.</div>
 </main>
 
 <!-- Modal cadastro/edição -->
@@ -104,7 +106,7 @@
       <label>Próximo vencimento <input type="date" id="cProxVenc"></label>
       <label>Observações <textarea id="cObs" rows="3"></textarea></label>
       <div class="modal-actions">
-        <button type="button" class="btn btn-ghost btn-sm" id="btnCancelar">Cancelar</button>
+        <button type="button" class="btn btn-sm" id="btnCancelar">Cancelar</button>
         <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
       </div>
     </form>
@@ -139,14 +141,14 @@
         <textarea id="pixCode" rows="3" readonly></textarea>
       </label>
       <div class="charge-actions">
-        <button class="btn btn-primary btn-sm" id="btnArquivo">📎 Compartilhar arquivo</button>
-        <button class="btn btn-ghost btn-sm" id="btnWhats">💬 WhatsApp</button>
-        <button class="btn btn-ghost btn-sm" id="btnCopiar">Copiar código</button>
-        <button class="btn btn-ghost btn-sm" id="btnImprimir">Imprimir</button>
+        <button class="btn btn-primary btn-sm" id="btnArquivo">Compartilhar arquivo</button>
+        <button class="btn btn-sm" id="btnWhats">WhatsApp</button>
+        <button class="btn btn-sm" id="btnCopiar">Copiar código</button>
+        <button class="btn btn-sm" id="btnImprimir">Imprimir</button>
       </div>
     </div>
     <div class="modal-actions">
-      <button type="button" class="btn btn-ghost btn-sm" id="btnChFechar">Fechar</button>
+      <button type="button" class="btn btn-sm" id="btnChFechar">Fechar</button>
     </div>
   </div>
 </div>
@@ -174,6 +176,6 @@
 </div>
 
 <script src="js/qrcode.min.js"></script>
-<script src="js/dashboard.js?v=5"></script>
+<script src="js/dashboard.js?v=6"></script>
 </body>
 </html>
