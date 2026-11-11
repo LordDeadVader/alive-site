@@ -57,6 +57,7 @@
       <button data-tab="resumo" class="on">Resumo</button>
       <button data-tab="licencas">Licenças<span class="count" id="nEntregar" hidden></span></button>
       <button data-tab="vendas">Vendas</button>
+      <button data-tab="demos">Demonstrações</button>
       <button data-tab="config">Configurações</button>
     </div>
 
@@ -66,6 +67,7 @@
         <div class="kpi"><span>Licenças ativas</span><strong id="kLic">0</strong></div>
         <div class="kpi"><span>Computadores ativados</span><strong id="kPcs">0</strong></div>
         <div class="kpi k-amber"><span>Chaves para enviar</span><strong id="kEntregar">0</strong></div>
+        <div class="kpi"><span>Testando agora</span><strong id="kDemo">0</strong><small id="kDemoSemana"></small></div>
         <div class="kpi"><span>Vendido no mês</span><strong id="kMes">R$ 0</strong><small id="kMesQtd"></small></div>
         <div class="kpi"><span>Recebido (sem taxas)</span><strong id="kLiq">R$ 0</strong><small id="kLiqQtd"></small></div>
       </div>
@@ -107,6 +109,26 @@
       </div>
     </div>
 
+    <!-- Demonstrações -->
+    <div id="sec-demos" hidden>
+      <p class="muted" style="margin-bottom:12px">Computadores que abriram o Kadam Cut sem chave. O tempo conta a partir da primeira abertura, pelo relógio do site: reinstalar ou mudar o relógio do Windows não zera.</p>
+      <div class="dash-bar">
+        <input type="search" id="buscaDemo" placeholder="Buscar pelo código do computador">
+        <select id="fDemo">
+          <option value="">Todas</option>
+          <option value="ativa">Testando agora</option>
+          <option value="fim">Tempo encerrado, sem compra</option>
+          <option value="comprou">Compraram</option>
+        </select>
+      </div>
+      <div class="box table-wrap">
+        <table>
+          <thead><tr><th>Computador</th><th>Começou</th><th>Última abertura</th><th class="num">Aberturas</th><th>Versão</th><th>Tempo</th><th>Compra</th><th></th></tr></thead>
+          <tbody id="tbDemos"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Configurações -->
     <div id="sec-config" hidden>
       <div class="box">
@@ -117,6 +139,7 @@
           <label>Parcelas no cartão (máximo) <input type="number" min="1" max="12" id="cfParcelas"></label>
           <label>Dias de suporte das novas licenças <input type="number" min="0" id="cfSuporte"></label>
           <label>Dias entre trocas de computador <input type="number" min="0" id="cfTroca"></label>
+          <label>Duração da demonstração (minutos) <input type="number" min="0" id="cfDemo"></label>
           <label>Versão atual do Kadam Cut <input type="text" id="cfVersao" placeholder="0.9.115"></label>
           <label class="full">Link para baixar o instalador
             <input type="url" id="cfLink" placeholder="https://drive.google.com/...">

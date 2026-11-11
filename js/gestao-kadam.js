@@ -23,7 +23,7 @@ const ACAO = {
   bloqueio: 'Licença bloqueada', desbloqueio: 'Licença desbloqueada', entrega: 'Entrega', email: 'E-mail enviado',
   erro_email: 'Falha no e-mail', erro_webhook: 'Erro no aviso do Mercado Pago', erro_checkout: 'Erro ao abrir pagamento',
   pagamento_divergente: 'Pagamento com valor diferente', admin_login: 'Entrada no painel', admin_login_falhou: 'Senha errada no painel',
-  config: 'Configurações alteradas', erro_admin: 'Erro no painel',
+  config: 'Configurações alteradas', erro_admin: 'Erro no painel', demo: 'Demonstração',
 };
 
 let token = sessionStorage.getItem('kadam_token') || '';
@@ -63,8 +63,9 @@ $('formLogin').onsubmit = async e => {
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => abrirAba(b.dataset.tab));
 function abrirAba(t) {
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
-  ['resumo', 'licencas', 'vendas', 'config'].forEach(s => $('sec-' + s).hidden = s !== t);
+  ['resumo', 'licencas', 'vendas', 'demos', 'config'].forEach(s => $('sec-' + s).hidden = s !== t);
   if (t === 'vendas') carregarVendas();
+  if (t === 'demos') carregarDemos();
   if (t === 'config') carregarConfig();
 }
 
@@ -76,6 +77,8 @@ async function carregar() {
     $('kLic').textContent = r.licencas.ativas;
     $('kPcs').textContent = r.computadores_ativos;
     $('kEntregar').textContent = r.licencas.a_entregar;
+    $('kDemo').textContent = r.demos.em_teste;
+    $('kDemoSemana').textContent = `${r.demos.semana} começaram nos últimos 7 dias`;
     $('kMes').textContent = brl(r.vendas.mes_bruto);
     $('kMesQtd').textContent = `${r.vendas.mes_qtd} venda${r.vendas.mes_qtd === 1 ? '' : 's'}`;
     $('kLiq').textContent = brl(r.vendas.liquido);
@@ -181,6 +184,13 @@ async function abrirLicenca(n) {
         <p class="muted" style="margin-top:6px">"Liberar" abre a vaga para o cliente ativar em outro computador (ex.: computador quebrou).</p>
       </div>
 
+      <div class="secao">
+        <h3>Ativar sem internet</h3>
+        <p class="muted" style="margin-bottom:8px">O cliente sem internet te manda o código do computador (13 letras e números que aparecem no Kadam Cut). Cole aqui e mande de volta o código de ativação. Este computador entra na contagem.</p>
+        <div class="linha"><input type="text" id="manualPc" style="flex:1;font-family:Consolas,monospace" placeholder="Código do computador" ${l.status !== 'ativa' ? 'disabled' : ''}><button class="btn btn-sm" id="bManual" ${l.status !== 'ativa' ? 'disabled' : ''}>Gerar código de ativação</button></div>
+        <div id="manualOut" hidden style="margin-top:10px"><div class="chave" id="manualCod"></div><div class="linha" style="margin-top:8px"><button class="btn btn-sm" id="bCopiarManual">Copiar código de ativação</button><span class="muted" id="manualInfo"></span></div></div>
+      </div>
+
       ${compras.length ? `<div class="secao"><h3>Pagamento</h3><div class="dados">${compras.map(c => `
         <div><span>Valor</span><strong>${c.valor_centavos ? brl(c.valor_centavos) : 'Cortesia'}</strong></div>
         <div><span>Forma</span><strong>${MEIO[c.meio] || esc(c.meio || '—')}${c.parcelas > 1 ? ` em ${c.parcelas}x` : ''}</strong></div>
@@ -217,6 +227,17 @@ async function abrirLicenca(n) {
       if (l.status === 'ativa') { const m = prompt('Motivo do bloqueio (ex.: reembolso, uso indevido):'); if (m === null) return; fazer({ acao: 'bloquear', motivo: m }); }
       else if (confirm('Desbloquear esta licença?')) fazer({ acao: 'desbloquear' });
     };
+    $('bManual').onclick = async () => {
+      try {
+        const j = await api('acao', { body: { acao: 'ativar_manual', numero: l.numero, computador: $('manualPc').value } });
+        await carregar();
+        await abrirLicenca(l.numero);
+        $('manualCod').textContent = j.ativacao;
+        $('manualInfo').textContent = `Licença com ${j.computadores} computadores.`;
+        $('manualOut').hidden = false;
+        $('bCopiarManual').onclick = async () => { await navigator.clipboard.writeText(j.ativacao); $('bCopiarManual').textContent = 'Copiado'; };
+      } catch (err) { msg(err.message, 'bad'); }
+    };
     box.querySelectorAll('[data-liberar]').forEach(b => b.onclick = () => {
       if (confirm(`Liberar o computador ${b.dataset.liberar}? O cliente poderá ativar em outro.`)) fazer({ acao: 'liberar', computador: b.dataset.liberar }, 'Computador liberado.');
     });
@@ -243,9 +264,51 @@ async function carregarVendas() {
   } catch (err) { $('tbVendas').innerHTML = `<tr><td colspan="7" class="vazio">${esc(err.message)}</td></tr>`; }
 }
 
+/* ─── Demonstrações ─── */
+let demosCache = [];
+const tempo = s => { const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? `${h}h${String(m).padStart(2, '0')}` : `${m} min`; };
+async function carregarDemos() {
+  $('tbDemos').innerHTML = '<tr><td colspan="8" class="vazio">Carregando…</td></tr>';
+  try { demosCache = (await api('demos')).demos; renderDemos(); }
+  catch (err) { $('tbDemos').innerHTML = `<tr><td colspan="8" class="vazio">${esc(err.message)}</td></tr>`; }
+}
+function renderDemos() {
+  const q = $('buscaDemo').value.trim().toUpperCase().replace(/[-\s]/g, ''), f = $('fDemo').value;
+  const lista = demosCache.filter(d => (!q || d.computador.includes(q)) &&
+    (!f || (f === 'comprou' ? d.licenca : f === 'ativa' ? d.restante_seg > 0 && !d.licenca : d.restante_seg === 0 && !d.licenca)));
+  $('tbDemos').innerHTML = lista.length ? lista.map(d => `<tr>
+    <td style="font-family:Consolas,monospace">${esc(d.computador)}</td>
+    <td>${dataHora(d.inicio_em)}</td>
+    <td>${dataHora(d.ultimo_em)}</td>
+    <td class="num">${d.aberturas}</td>
+    <td>${esc(d.versao || '—')}</td>
+    <td>${d.licenca ? '<span class="tag tag-ok">Licenciado</span>' : d.restante_seg > 0 ? `<span class="tag tag-info">Faltam ${tempo(d.restante_seg)}</span>` : '<span class="tag">Encerrado</span>'}<small>de ${tempo(d.minutos * 60)}</small></td>
+    <td>${d.licenca ? `<button class="link-btn" data-lic="${d.licenca}">Nº ${d.licenca}</button>` : '—'}</td>
+    <td class="num"><div class="linha" style="justify-content:flex-end;flex-wrap:nowrap"><button class="icon-btn" data-demo-tempo="${esc(d.computador)}">Mais tempo</button><button class="icon-btn" data-demo-reiniciar="${esc(d.computador)}">Reiniciar</button></div></td>
+  </tr>`).join('') : '<tr><td colspan="8" class="vazio">Nenhuma demonstração ainda.</td></tr>';
+}
+$('buscaDemo').oninput = renderDemos;
+$('fDemo').onchange = renderDemos;
+$('tbDemos').addEventListener('click', async e => {
+  const t = e.target.closest('[data-demo-tempo]'), r = e.target.closest('[data-demo-reiniciar]');
+  try {
+    if (t) {
+      const d = demosCache.find(x => x.computador === t.dataset.demoTempo);
+      const v = prompt('Duração total da demonstração deste computador, em horas (ex.: 4). Deixe vazio para voltar ao padrão.', String(d.minutos / 60));
+      if (v === null) return;
+      await api('acao', { body: { acao: 'demo_tempo', computador: d.computador, minutos: v.trim() === '' ? null : Math.round(Number(v.replace(',', '.')) * 60) } });
+    }
+    if (r) {
+      if (!confirm('Reiniciar a demonstração deste computador? O tempo começa de novo a partir de agora.')) return;
+      await api('acao', { body: { acao: 'demo_reiniciar', computador: r.dataset.demoReiniciar } });
+    }
+    if (t || r) carregarDemos();
+  } catch (err) { alert(err.message); }
+});
+
 /* ─── Configurações ─── */
 const CAMPOS = { cfPix: ['preco_pix_centavos', 'reais'], cfCartao: ['preco_cartao_centavos', 'reais'], cfParcelas: ['parcelas_max'], cfSuporte: ['suporte_dias'],
-  cfTroca: ['troca_intervalo_dias'], cfVersao: ['versao_atual'], cfLink: ['link_instalador'], cfTitulo: ['produto_titulo'] };
+  cfTroca: ['troca_intervalo_dias'], cfDemo: ['demo_minutos'], cfVersao: ['versao_atual'], cfLink: ['link_instalador'], cfTitulo: ['produto_titulo'] };
 async function carregarConfig() {
   try {
     const { config } = await api('config');
