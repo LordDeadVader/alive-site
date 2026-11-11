@@ -78,7 +78,9 @@ async function carregar() {
     $('kPcs').textContent = r.computadores_ativos;
     $('kEntregar').textContent = r.licencas.a_entregar;
     $('kDemo').textContent = r.demos.em_teste;
-    $('kDemoSemana').textContent = `${r.demos.semana} começaram nos últimos 7 dias`;
+    $('kDemo7').textContent = `${r.demos.d7} em 7 dias · ${r.demos.d7_compras} compraram`;
+    $('kDemo30').textContent = r.demos.d30;
+    $('kDemo30c').textContent = `${r.demos.d30_compras} viraram compra`;
     $('kMes').textContent = brl(r.vendas.mes_bruto);
     $('kMesQtd').textContent = `${r.vendas.mes_qtd} venda${r.vendas.mes_qtd === 1 ? '' : 's'}`;
     $('kLiq').textContent = brl(r.vendas.liquido);
@@ -265,54 +267,64 @@ async function carregarVendas() {
 }
 
 /* ─── Demonstrações ─── */
-let demosCache = [];
-const tempo = s => { const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? `${h}h${String(m).padStart(2, '0')}` : `${m} min`; };
+let demosCache = [], demoAberta = null;
+const tempo = m => { const h = Math.floor(m / 60), r = m % 60; return h ? `${h}h${String(r).padStart(2, '0')}` : `${r} min`; };
 async function carregarDemos() {
-  $('tbDemos').innerHTML = '<tr><td colspan="8" class="vazio">Carregando…</td></tr>';
+  $('tbDemos').innerHTML = '<tr><td colspan="9" class="vazio">Carregando…</td></tr>';
   try { demosCache = (await api('demos')).demos; renderDemos(); }
-  catch (err) { $('tbDemos').innerHTML = `<tr><td colspan="8" class="vazio">${esc(err.message)}</td></tr>`; }
+  catch (err) { $('tbDemos').innerHTML = `<tr><td colspan="9" class="vazio">${esc(err.message)}</td></tr>`; }
+}
+function situacaoDemo(d) {
+  if (d.licenca) return `<button class="link-btn" data-lic="${d.licenca}">Comprou: licença nº ${d.licenca}</button>`;
+  if (d.restante_min > 0) return `<span class="tag tag-info">Faltam ${tempo(d.restante_min)}</span>`;
+  return `<span class="tag">${d.encerrada_por === 'admin' ? 'Encerrada' : 'Terminada'}</span>`;
 }
 function renderDemos() {
   const q = $('buscaDemo').value.trim().toUpperCase().replace(/[-\s]/g, ''), f = $('fDemo').value;
-  const lista = demosCache.filter(d => (!q || d.computador.includes(q)) &&
-    (!f || (f === 'comprou' ? d.licenca : f === 'ativa' ? d.restante_seg > 0 && !d.licenca : d.restante_seg === 0 && !d.licenca)));
+  const lista = demosCache.filter(d => (!q || d.computador.includes(q) || (d.obs || '').toUpperCase().includes(q)) &&
+    (!f || (f === 'comprou' ? d.licenca : f === 'ativa' ? d.restante_min > 0 && !d.licenca : d.restante_min === 0 && !d.licenca)));
   $('tbDemos').innerHTML = lista.length ? lista.map(d => `<tr>
     <td style="font-family:Consolas,monospace">${esc(d.computador)}</td>
-    <td>${dataHora(d.inicio_em)}</td>
-    <td>${dataHora(d.ultimo_em)}</td>
-    <td class="num">${d.aberturas}</td>
+    <td>${dataHora(d.inicio)}</td>
+    <td>${dataHora(d.fim)}</td>
+    <td>${situacaoDemo(d)}</td>
     <td>${esc(d.versao || '—')}</td>
-    <td>${d.licenca ? '<span class="tag tag-ok">Licenciado</span>' : d.restante_seg > 0 ? `<span class="tag tag-info">Faltam ${tempo(d.restante_seg)}</span>` : '<span class="tag">Encerrado</span>'}<small>de ${tempo(d.minutos * 60)}</small></td>
-    <td>${d.licenca ? `<button class="link-btn" data-lic="${d.licenca}">Nº ${d.licenca}</button>` : '—'}</td>
-    <td class="num"><div class="linha" style="justify-content:flex-end;flex-wrap:nowrap"><button class="icon-btn" data-demo-tempo="${esc(d.computador)}">Mais tempo</button><button class="icon-btn" data-demo-reiniciar="${esc(d.computador)}">Reiniciar</button></div></td>
-  </tr>`).join('') : '<tr><td colspan="8" class="vazio">Nenhuma demonstração ainda.</td></tr>';
+    <td class="num">${d.usos}</td>
+    <td>${dataHora(d.ultimo_uso)}</td>
+    <td>${esc(d.obs || '')}</td>
+    <td class="num"><button class="icon-btn" data-demo="${esc(d.computador)}">Gerenciar</button></td>
+  </tr>`).join('') : '<tr><td colspan="9" class="vazio">Nenhuma demonstração ainda.</td></tr>';
 }
 $('buscaDemo').oninput = renderDemos;
 $('fDemo').onchange = renderDemos;
-$('tbDemos').addEventListener('click', async e => {
-  const t = e.target.closest('[data-demo-tempo]'), r = e.target.closest('[data-demo-reiniciar]');
-  try {
-    if (t) {
-      const d = demosCache.find(x => x.computador === t.dataset.demoTempo);
-      const v = prompt('Duração total da demonstração deste computador, em horas (ex.: 4). Deixe vazio para voltar ao padrão.', String(d.minutos / 60));
-      if (v === null) return;
-      await api('acao', { body: { acao: 'demo_tempo', computador: d.computador, minutos: v.trim() === '' ? null : Math.round(Number(v.replace(',', '.')) * 60) } });
-    }
-    if (r) {
-      if (!confirm('Reiniciar a demonstração deste computador? O tempo começa de novo a partir de agora.')) return;
-      await api('acao', { body: { acao: 'demo_reiniciar', computador: r.dataset.demoReiniciar } });
-    }
-    if (t || r) carregarDemos();
-  } catch (err) { alert(err.message); }
+$('tbDemos').addEventListener('click', e => {
+  const b = e.target.closest('[data-demo]'); if (!b) return;
+  demoAberta = demosCache.find(x => x.computador === b.dataset.demo);
+  $('mdInfo').textContent = `${demoAberta.computador} · fim ${dataHora(demoAberta.fim)}`;
+  $('mdObs').value = demoAberta.obs || ''; $('mdAte').value = ''; $('mdMsg').hidden = true;
+  $('mDemo').hidden = false;
 });
+async function acaoDemo(body, ok) {
+  try {
+    const j = await api('acao', { body: { computador: demoAberta.computador, ...body } });
+    await carregarDemos(); carregar();
+    demoAberta = demosCache.find(x => x.computador === demoAberta.computador);
+    $('mdInfo').textContent = `${demoAberta.computador} · fim ${dataHora(demoAberta.fim)}`;
+    $('mdMsg').className = 'aviso aviso-ok'; $('mdMsg').textContent = ok || (j.fim ? 'Novo fim: ' + dataHora(j.fim) : 'Salvo.'); $('mdMsg').hidden = false;
+  } catch (err) { $('mdMsg').className = 'aviso aviso-bad'; $('mdMsg').textContent = err.message; $('mdMsg').hidden = false; }
+}
+document.querySelectorAll('[data-mais]').forEach(b => b.onclick = () => acaoDemo({ acao: 'demo_mais_tempo', minutos: Number(b.dataset.mais) }));
+$('mdAteBtn').onclick = () => { if (!$('mdAte').value) return; acaoDemo({ acao: 'demo_mais_tempo', ate: new Date($('mdAte').value).toISOString() }); };
+$('mdObsBtn').onclick = () => acaoDemo({ acao: 'demo_obs', obs: $('mdObs').value }, 'Anotação salva.');
+$('mdEncerrar').onclick = () => { if (confirm('Encerrar a demonstração deste computador agora?')) acaoDemo({ acao: 'demo_encerrar' }, 'Demonstração encerrada.'); };
 
 /* ─── Configurações ─── */
 const CAMPOS = { cfPix: ['preco_pix_centavos', 'reais'], cfCartao: ['preco_cartao_centavos', 'reais'], cfParcelas: ['parcelas_max'], cfSuporte: ['suporte_dias'],
-  cfTroca: ['troca_intervalo_dias'], cfDemo: ['demo_minutos'], cfVersao: ['versao_atual'], cfLink: ['link_instalador'], cfTitulo: ['produto_titulo'] };
+  cfTroca: ['troca_intervalo_dias'], cfDemo: ['demo_minutos'], cfCheckout: ['checkout_ativo'], cfVersao: ['versao_atual'], cfLink: ['link_instalador'], cfTitulo: ['produto_titulo'] };
 async function carregarConfig() {
   try {
     const { config } = await api('config');
-    for (const [id, [k, t]] of Object.entries(CAMPOS)) $(id).value = t === 'reais' ? (Number(config[k] || 0) / 100).toFixed(2) : (config[k] ?? '');
+    for (const [id, [k, t]] of Object.entries(CAMPOS)) $(id).value = t === 'reais' ? (Number(config[k] || 0) / 100).toFixed(2) : (config[k] ?? (id === 'cfCheckout' ? '0' : ''));
   } catch (err) { $('cfMsg').textContent = err.message; }
 }
 $('formConfig').onsubmit = async e => {

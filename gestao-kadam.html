@@ -67,7 +67,8 @@
         <div class="kpi"><span>Licenças ativas</span><strong id="kLic">0</strong></div>
         <div class="kpi"><span>Computadores ativados</span><strong id="kPcs">0</strong></div>
         <div class="kpi k-amber"><span>Chaves para enviar</span><strong id="kEntregar">0</strong></div>
-        <div class="kpi"><span>Testando agora</span><strong id="kDemo">0</strong><small id="kDemoSemana"></small></div>
+        <div class="kpi"><span>Testando agora</span><strong id="kDemo">0</strong><small id="kDemo7"></small></div>
+        <div class="kpi"><span>Demonstrações em 30 dias</span><strong id="kDemo30">0</strong><small id="kDemo30c"></small></div>
         <div class="kpi"><span>Vendido no mês</span><strong id="kMes">R$ 0</strong><small id="kMesQtd"></small></div>
         <div class="kpi"><span>Recebido (sem taxas)</span><strong id="kLiq">R$ 0</strong><small id="kLiqQtd"></small></div>
       </div>
@@ -111,19 +112,19 @@
 
     <!-- Demonstrações -->
     <div id="sec-demos" hidden>
-      <p class="muted" style="margin-bottom:12px">Computadores que abriram o Kadam Cut sem chave. O tempo conta a partir da primeira abertura, pelo relógio do site: reinstalar ou mudar o relógio do Windows não zera.</p>
+      <p class="muted" style="margin-bottom:12px">Computadores que abriram o Kadam Cut sem chave. O tempo conta a partir da primeira ferramenta usada, pelo relógio do site: reinstalar ou mudar o relógio do Windows não zera.</p>
       <div class="dash-bar">
         <input type="search" id="buscaDemo" placeholder="Buscar pelo código do computador">
         <select id="fDemo">
           <option value="">Todas</option>
           <option value="ativa">Testando agora</option>
-          <option value="fim">Tempo encerrado, sem compra</option>
+          <option value="fim">Terminada, sem compra</option>
           <option value="comprou">Compraram</option>
         </select>
       </div>
       <div class="box table-wrap">
         <table>
-          <thead><tr><th>Computador</th><th>Começou</th><th>Última abertura</th><th class="num">Aberturas</th><th>Versão</th><th>Tempo</th><th>Compra</th><th></th></tr></thead>
+          <thead><tr><th>Computador</th><th>Início</th><th>Fim</th><th>Situação</th><th>Versão</th><th class="num">Usos</th><th>Último uso</th><th>Anotação</th><th></th></tr></thead>
           <tbody id="tbDemos"></tbody>
         </table>
       </div>
@@ -139,7 +140,10 @@
           <label>Parcelas no cartão (máximo) <input type="number" min="1" max="12" id="cfParcelas"></label>
           <label>Dias de suporte das novas licenças <input type="number" min="0" id="cfSuporte"></label>
           <label>Dias entre trocas de computador <input type="number" min="0" id="cfTroca"></label>
-          <label>Duração da demonstração (minutos) <input type="number" min="0" id="cfDemo"></label>
+          <label>Duração da demonstração (minutos) <input type="number" min="1" id="cfDemo"><small>Vale para computadores que ainda não testaram.</small></label>
+          <label>Pagamento automático (Mercado Pago)
+            <select id="cfCheckout"><option value="0">Desligado: venda direta (WhatsApp / Instagram + Pix)</option><option value="1">Ligado</option></select>
+            <small>Ligando aqui, ligue também na página de vendas (kadam.js: pagamentoAutomatico).</small></label>
           <label>Versão atual do Kadam Cut <input type="text" id="cfVersao" placeholder="0.9.115"></label>
           <label class="full">Link para baixar o instalador
             <input type="url" id="cfLink" placeholder="https://drive.google.com/...">
@@ -155,6 +159,28 @@
 
 <!-- Detalhe da licença -->
 <div class="modal" id="mLic" hidden><div class="modal-card wide" id="mLicBody"></div></div>
+
+<!-- Demonstração: mais tempo / encerrar / anotar -->
+<div class="modal" id="mDemo" hidden>
+  <div class="modal-card">
+    <div class="modal-head"><div><h2>Demonstração</h2><p class="muted" id="mdInfo"></p></div><button class="btn btn-sm" data-fechar>Fechar</button></div>
+    <div class="secao" style="margin-top:0">
+      <h3>Dar mais tempo</h3>
+      <p class="muted" style="margin-bottom:8px">Se já terminou, o tempo conta a partir de agora.</p>
+      <div class="linha"><button class="btn btn-sm" data-mais="30">+30 min</button><button class="btn btn-sm" data-mais="120">+2 h</button></div>
+      <div class="linha" style="margin-top:10px"><input type="datetime-local" id="mdAte"><button class="btn btn-sm" id="mdAteBtn">Até esta data e hora</button></div>
+    </div>
+    <div class="secao">
+      <h3>Anotação</h3>
+      <div class="linha"><input type="text" id="mdObs" style="flex:1" placeholder="Ex.: nome de quem está testando"><button class="btn btn-sm" id="mdObsBtn">Salvar</button></div>
+    </div>
+    <p id="mdMsg" class="aviso" style="margin-top:14px" hidden></p>
+    <div class="secao linha" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:16px">
+      <span class="muted">Encerrar termina a demonstração agora.</span>
+      <button class="btn btn-sm btn-danger" id="mdEncerrar">Encerrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- Nova licença -->
 <div class="modal" id="mEmitir" hidden>
@@ -182,6 +208,6 @@
   </div>
 </div>
 
-<script src="js/gestao-kadam.js?v=1"></script>
+<script src="js/gestao-kadam.js?v=3"></script>
 </body>
 </html>
